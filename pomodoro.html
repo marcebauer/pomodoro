@@ -1,0 +1,154 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Pomodoro</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="pomodoro.css">
+	<link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+	<div class="canvas">
+		<div class="tomato">
+			<div class="tomato-"></div>
+			<div class="pedicel"></div>
+			<div class="sepal1"></div>
+			<div class="sepal2"></div>
+			<div class="eyes">
+				<div class="eye-spark1"></div>
+				<div class="eye-spark2"></div>
+			</div>
+			<div class="dead-eye-left"></div>
+			<div class="dead-eye-right"></div>
+			<div class="cheeks"></div>
+			<div class="mouth"></div>
+		</div>
+	</div>
+	<!-- <img src='pomodoro.png' alt='pomodoro-image' style='width:20%'> -->
+	<div id="currentStage">Pomodoro</div>
+	<div id="countdown">25:00</div>
+	<button id="button" onclick="startPomodoro()">Start</button>
+	<div id="timelost">00:00:00</div>
+
+<script>
+let pomodoroTime = 1500;
+let timeLost = 0;
+let i = 1;
+let onBreak = false;
+
+const countDownEl = document.getElementById('countdown');
+const currentStageEl = document.getElementById('currentStage');
+const buttonEl = document.getElementById("button");
+const timeLostEl = document.getElementById('timelost');
+const tomato = document.getElementsByClassName('tomato')[0];
+const tomatoPedicel = document.getElementsByClassName('pedicel')[0];
+const tomatoSepal1 = document.getElementsByClassName('sepal1')[0];
+const tomatoSepal2 = document.getElementsByClassName('sepal2')[0];
+const tomatoCheeks = document.getElementsByClassName('cheeks')[0];
+const tomatoMouth = document.getElementsByClassName('mouth')[0];
+const tomatoEyes = document.getElementsByClassName('eyes')[0];
+const tomatoEyeSparkRight = document.getElementsByClassName('eye-spark1')[0];
+const tomatoEyeSparkLeft = document.getElementsByClassName('eye-spark2')[0];
+const tomatoParts = [tomato, tomatoPedicel, tomatoSepal1, tomatoSepal2, tomatoCheeks, tomatoMouth,tomatoEyeSparkLeft,tomatoEyeSparkRight];
+const tomatoDeadEyeRight = document.getElementsByClassName('dead-eye-left')[0];
+const tomatoDeadEyeLeft = document.getElementsByClassName('dead-eye-right')[0];
+
+var breakSound = new Audio('break.wav');
+var backToWorkSound = new Audio('pomodoro.wav');
+var forcedStopSound = new Audio('forcedstop.wav');
+var resumeSound = new Audio('resume.wav');
+var pomodoroCountdown;
+var forcedStopTimer;
+
+// Run the timer functions once to fix delay at start.
+updateForcedStopTimer();
+updateCountdown();
+//
+
+buttonEl.addEventListener('click', () => {
+		tomatoParts.forEach(element => {const running = element.style.animationPlayState || 'running';
+		element.style.animationPlayState = running === 'running' ? 'paused' : 'running';
+		})
+});
+
+function startPomodoro(){
+	buttonEl.setAttribute("onClick", "javascript: stopPomodoro();" );
+	buttonEl.innerHTML = "Force stop";
+	
+	resumeSound.play();
+	pomodoroCountdown = setInterval(updateCountdown, 1000);
+	if(forcedStopTimer != null){
+		clearInterval(forcedStopTimer);
+	}
+}
+
+function stopPomodoro(){
+	if(pomodoroTime > 0){
+		forcedStopSound.play();
+	}
+	
+	buttonEl.setAttribute("onClick", "javascript: startPomodoro();" );
+	buttonEl.innerHTML = "Resume";
+	clearInterval(pomodoroCountdown);
+	forcedStopTimer = setInterval(updateForcedStopTimer, 1000);
+}
+
+function updateForcedStopTimer(){
+	let hours = Math.floor(timeLost/3600);
+	let minutes = Math.floor(timeLost/60) % 60;
+	let seconds = timeLost % 60;
+	
+	seconds = seconds < 10 ? '0' + seconds : seconds;
+	minutes = minutes < 10 ? '0' + minutes : minutes;
+	hours = hours < 10 ? '0' + hours : hours;
+
+	if(timeLost > 7){
+	tomatoEyes.style.visibility = 'hidden';
+	tomatoDeadEyeLeft.style.visibility = 'visible';
+	tomatoDeadEyeRight.style.visibility = 'visible';
+	currentStageEl.innerHTML = "Failed";
+	}
+
+	timeLostEl.innerHTML = hours + ':' + minutes + ':' + seconds;
+	timeLost++;
+}
+
+function updateCountdown() {
+	if(pomodoroTime < 0){
+		if(i === 4){
+		currentStageEl.innerHTML = "Large break";
+		document.title = "Large break";
+			pomodoroTime = 900;
+			i = 1;
+			onBreak = true;
+			breakSound.play();
+		return;
+		}
+		if(!onBreak){
+		currentStageEl.innerHTML = "Quick break";
+		document.title = "Quick break";
+			pomodoroTime = 300;
+			onBreak = true;;
+			breakSound.play();
+		}
+		else{
+		currentStageEl.innerHTML = "Pomodoro";
+		document.title = "Pomodoro";
+			pomodoroTime = 1500;
+			onBreak = false;
+			i++;
+			backToWorkSound.play();
+		}
+	    }
+	let minutes = Math.floor(pomodoroTime/60);
+	let seconds = pomodoroTime % 60;
+
+	seconds = seconds < 10 ? '0' + seconds : seconds;
+	minutes = minutes < 10 ? '0' + minutes : minutes;
+
+	countDownEl.innerHTML = minutes + ':' + seconds;
+	pomodoroTime--;
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,308 @@
+#button {
+	background-color: #336633;
+	border: none;
+	color: white;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 15px 32px;
+	text-align: center;
+	text-decoration: none;
+	font-size: 16px;
+}
+#countdown {
+	text-align: center;
+	font-size: 60px;
+	margin-top: 0px;
+}
+#currentStage {
+	text-align: center;
+	font-size: 40px;
+}
+img {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+p {
+  text-align: center;
+  font-size: 60px;
+  margin-top: 0px;
+}
+#timelost {
+	text-align: center;
+	font-size: 30px;
+	margin-top: 0px;
+}
+
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+.canvas {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 50vh;
+}
+.tomato {
+	position: absolute;
+	display: block;
+	top: 60px;
+	width: 250px;
+	height: 200px;
+	background-color: red;
+	border-radius: 40% / 50% 50% 50% 50%;
+	box-shadow: 10px -10px 20px rgba(0, 0, 0, 0.3) inset;
+	animation: tomato-decay 7s;
+	animation-fill-mode: forwards;
+	animation-play-state: paused;
+}
+
+@keyframes tomato-decay {
+	0%   {
+	}
+	90% {
+		background-color: #C84B31;
+		}
+	95% {
+		box-shadow: 10px -10px 20px rgba(0, 0, 0, 0.3) inset;
+		border-radius: 40% / 50% 50% 40% 30%;
+	}
+	100% {
+		background-color: #C84B31;
+		box-shadow: 10px -10px 20px rgba(0, 0, 0, 0.3) inset, -10px 20px 10px rgb(211, 228, 205) inset;
+		border-radius: 40% / 50% 50% 30% 20%;
+	}
+}
+.tomato-sheen {
+	position: absolute;
+	display: block;
+	width: 1px;
+	height: 1px;
+	bottom: 105px;
+	right: 95px;
+	background-color: coral;
+    box-shadow: 0 0 40px 60px coral;
+	border-radius: 50%;
+	opacity: 0.5;
+}
+.eyes {
+	position: absolute;
+	width: 22px;
+	height: 22px;
+	background: black;
+	border-radius: 50%;
+	bottom: 105px;
+	right: 120px;
+	box-shadow: 65px -5px 0 black;
+	animation: blink 7s infinite;
+}
+
+.dead-eye-left {
+	visibility: hidden;
+	background: black;
+	height: 22px;
+	position: relative;
+	border-radius: 50%;
+	width: 4px;
+	bottom: -70px;
+	right: -120px;
+	transform: rotate(40deg);
+}
+.dead-eye-left:after {
+	background: black;
+	content: "";
+	height: 4px;
+	border-radius: 50%;
+	left: -9px;
+	position: absolute;
+	top: 9px;
+	width: 22px;
+}
+
+.dead-eye-right {
+	visibility: hidden;
+	background: black;
+	height: 22px;
+	position: relative;
+	border-radius: 50%;
+	width: 4px;
+	bottom: -40px;
+	right: -180px;
+	transform: rotate(40deg);
+}
+.dead-eye-right:after {
+	background: black;
+	content: "";
+	height: 4px;
+	border-radius: 50%;
+	left: -9px;
+	position: absolute;
+	top: 9px;
+	width: 22px;
+}
+
+@keyframes blink {
+	0%, 40% {transform: scale(1, 1);}
+	41% {transform: scale(1, 0);}
+	42%, 98% {transform: scale(1, 1);}
+	99% {transform: scale(1, 0);}
+	100% {transform: scale(1, 1);}
+}
+
+.eye-spark1 {
+	position: absolute;
+	width: 7px;
+	height: 7px;
+	background: white;
+	border-radius: 50%;
+	bottom: 12px;
+	right: 6px;
+	box-shadow: 65px -5px 0 white;
+	animation: fade-spark 7s;
+	animation-fill-mode: forwards;
+	animation-play-state: paused;
+}
+
+.eye-spark2 {
+	position: absolute;
+	width: 4px;
+	height: 4px;
+	background: white;
+	border-radius: 50%;
+	bottom: 7px;
+	right: 14px;
+	box-shadow: 65px -5px 0 white;
+	animation: fade-spark 7s;
+	animation-fill-mode: forwards;
+	animation-play-state: paused;
+}
+
+@keyframes fade-spark {
+	100% {
+		opacity: 0;
+		box-shadow: black;
+	}
+}
+
+.cheeks {
+	position: absolute;
+	width: 15px;
+	height: 15px;
+	background: lightsalmon;
+	border-radius: 50%;
+	bottom: 91px;
+	right: 144px;
+	box-shadow: 107px -15px 0 lightsalmon;
+	opacity: 70%;
+	animation: cheek-fade 7s;
+	animation-fill-mode: forwards;
+	animation-play-state: paused;
+}
+
+@keyframes cheek-fade {
+	100% {
+		opacity: 0;
+	}
+}
+
+.mouth {
+	position: absolute;
+	width: 40px;
+	height: 34px;
+	bottom: 87px;
+	right: 75px;
+	border-radius: 50%;
+	background: transparent;
+	border-bottom: 2px solid #000;
+	transform: rotate(-10deg);
+	animation: sadness 7s;
+	animation-fill-mode: forwards;
+	animation-play-state: paused;
+}
+
+@keyframes sadness {
+	100% {
+		border-radius: 0%;
+		height: 1px;
+	}
+}
+
+.pedicel {
+	position: absolute;
+	top: -30px;
+	right: 130px;
+	width: 10px;
+    height: 40px;
+	background: #346751;
+    border: 6px solid #346751;
+    border-radius: 0px 50px;
+	transform:rotate(-30deg);
+	animation: pedicel-decay 7s;
+	animation-fill-mode: forwards;
+	animation-play-state: paused;
+}
+
+.sepal1 {
+	position: absolute;
+	left: 40px;
+	display: block;
+	width: 0px;
+	height: 0px;
+	border-radius: 100%;
+	border-right: 70px solid transparent;
+	border-bottom: 20px solid #346751;
+	border-left: 90px solid transparent;
+	transform: rotate(10deg);
+	animation: sepal-decay 7s;
+	animation-fill-mode: forwards;
+	animation-play-state: paused;
+}
+.sepal2 {
+	position: absolute;
+	display: block;
+	left: 60px;
+	width: 0px;
+	height: 0px;
+	border-radius: 100%;
+	border-right: 70px solid transparent;
+	border-bottom: 20px solid #346751;
+	border-left: 70px solid transparent;
+	transform: rotate(-30deg);
+	content: '';
+	animation: sepal-decay 7s;
+	animation-fill-mode: forwards;
+	animation-play-state: paused;
+}
+
+@keyframes pedicel-decay {
+	100% {
+		background: #5f6956;
+		border: 6px solid #81743a;
+	}
+}
+
+@keyframes sepal-decay {
+	100% {
+		border-bottom: 10px solid #81743a;
+	}
+}
+
+.paused{
+    -webkit-animation-play-state:paused;
+    -moz-animation-play-state:paused;
+    -o-animation-play-state:paused; 
+    animation-play-state:paused;
+}
+
+/*
+C84B31 red
+346751 green
+ECDBBA white
+161616 black
+*/
