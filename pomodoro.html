@@ -1,14 +1,18 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-	<title>Pomodoro</title>
+	<title>25:00 - Pomodoro</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="pomodoro.css">
 	<link rel="icon" type="image/x-icon" href="favicon.ico">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Basic&display=swap" rel="stylesheet"> 
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
 	<div class="canvas">
-		<div class="tomato">
+		<div class="tomato" onclick="startPomodoro()">
 			<div class="tomato-"></div>
 			<div class="pedicel"></div>
 			<div class="sepal1"></div>
@@ -23,21 +27,28 @@
 			<div class="mouth"></div>
 		</div>
 	</div>
-	<!-- <img src='pomodoro.png' alt='pomodoro-image' style='width:20%'> -->
-	<div id="currentStage">Pomodoro</div>
-	<div id="countdown">25:00</div>
-	<button id="button" onclick="startPomodoro()">Start</button>
-	<div id="timelost">00:00:00</div>
-
+	<div class="container">
+		<div id="currentStage">Study session</div>
+		<div id="countdown">25:00</div>
+		<div id="timelost">00:00:00</div>
+	</div>
+	<footer id="footer">
+		<i class="fa fa-sm fa-github"></i>
+		<a href="http://www.github.com/marcebauer">marcebauer</a>
+	</footer>
 <script>
-let pomodoroTime = 1500;
+let timeBeforeFailure = 60;
 let timeLost = 0;
 let i = 1;
+const STUDY_DURATION = 1500;
+const LONG_BREAK_DURATION = 900;
+const SHORT_BREAK_DURATION = 300;
+let pomodoroTime = STUDY_DURATION;
 let onBreak = false;
+let currentStage = "Pomodoro";
 
 const countDownEl = document.getElementById('countdown');
 const currentStageEl = document.getElementById('currentStage');
-const buttonEl = document.getElementById("button");
 const timeLostEl = document.getElementById('timelost');
 const tomato = document.getElementsByClassName('tomato')[0];
 const tomatoPedicel = document.getElementsByClassName('pedicel')[0];
@@ -48,14 +59,15 @@ const tomatoMouth = document.getElementsByClassName('mouth')[0];
 const tomatoEyes = document.getElementsByClassName('eyes')[0];
 const tomatoEyeSparkRight = document.getElementsByClassName('eye-spark1')[0];
 const tomatoEyeSparkLeft = document.getElementsByClassName('eye-spark2')[0];
-const tomatoParts = [tomato, tomatoPedicel, tomatoSepal1, tomatoSepal2, tomatoCheeks, tomatoMouth,tomatoEyeSparkLeft,tomatoEyeSparkRight];
+const warning = document.getElementsByClassName('container')[0];
+const animatedParts = [tomato, tomatoPedicel, tomatoSepal1, tomatoSepal2, tomatoCheeks, tomatoMouth,tomatoEyeSparkLeft,tomatoEyeSparkRight];
 const tomatoDeadEyeRight = document.getElementsByClassName('dead-eye-left')[0];
 const tomatoDeadEyeLeft = document.getElementsByClassName('dead-eye-right')[0];
 
-var breakSound = new Audio('break.wav');
-var backToWorkSound = new Audio('pomodoro.wav');
-var forcedStopSound = new Audio('forcedstop.wav');
-var resumeSound = new Audio('resume.wav');
+const BREAK_SOUND = new Audio('break.wav');
+var BACK_TO_WORK_SOUND = new Audio('pomodoro.wav');
+var FORCED_STOP_SOUND = new Audio('forcedstop.wav');
+var RESUME_SOUND = new Audio('resume.wav');
 var pomodoroCountdown;
 var forcedStopTimer;
 
@@ -64,17 +76,22 @@ updateForcedStopTimer();
 updateCountdown();
 //
 
-buttonEl.addEventListener('click', () => {
-		tomatoParts.forEach(element => {const running = element.style.animationPlayState || 'running';
+tomato.addEventListener('click', () => {
+		animatedParts.forEach(element => {const running = element.style.animationPlayState || 'running';
 		element.style.animationPlayState = running === 'running' ? 'paused' : 'running';
 		})
 });
 
+function talk() {
+  var popup = document.getElementById("Hi there!");
+  popup.classList.toggle("show");
+}
+
 function startPomodoro(){
-	buttonEl.setAttribute("onClick", "javascript: stopPomodoro();" );
-	buttonEl.innerHTML = "Force stop";
-	
-	resumeSound.play();
+	warning.style.animation = 'none';
+	tomato.setAttribute("onClick", "javascript: stopPomodoro();" );
+		
+	RESUME_SOUND.play();
 	pomodoroCountdown = setInterval(updateCountdown, 1000);
 	if(forcedStopTimer != null){
 		clearInterval(forcedStopTimer);
@@ -83,11 +100,12 @@ function startPomodoro(){
 
 function stopPomodoro(){
 	if(pomodoroTime > 0){
-		forcedStopSound.play();
+		FORCED_STOP_SOUND.play();
 	}
 	
-	buttonEl.setAttribute("onClick", "javascript: startPomodoro();" );
-	buttonEl.innerHTML = "Resume";
+	warning.style.animation = 'warning 1s infinite';
+	
+	tomato.setAttribute("onClick", "javascript: startPomodoro();" );
 	clearInterval(pomodoroCountdown);
 	forcedStopTimer = setInterval(updateForcedStopTimer, 1000);
 }
@@ -101,11 +119,13 @@ function updateForcedStopTimer(){
 	minutes = minutes < 10 ? '0' + minutes : minutes;
 	hours = hours < 10 ? '0' + hours : hours;
 
-	if(timeLost > 7){
+	if(timeLost > timeBeforeFailure){
 	tomatoEyes.style.visibility = 'hidden';
 	tomatoDeadEyeLeft.style.visibility = 'visible';
 	tomatoDeadEyeRight.style.visibility = 'visible';
 	currentStageEl.innerHTML = "Failed";
+	tomato.setAttribute("onClick", "javascript: FORCED_STOP_SOUND.play();" );
+	clearInterval(pomodoroCountdown);
 	}
 
 	timeLostEl.innerHTML = hours + ':' + minutes + ':' + seconds;
@@ -115,28 +135,29 @@ function updateForcedStopTimer(){
 function updateCountdown() {
 	if(pomodoroTime < 0){
 		if(i === 4){
-		currentStageEl.innerHTML = "Large break";
-		document.title = "Large break";
-			pomodoroTime = 900;
+		currentStageEl.innerHTML = "Long break";
+		currentStage = "Long break";
+			pomodoroTime = LONG_BREAK_DURATION;
+			timeBeforeFailure += 600;
 			i = 1;
 			onBreak = true;
-			breakSound.play();
+			BREAK_SOUND.play();
 		return;
 		}
 		if(!onBreak){
-		currentStageEl.innerHTML = "Quick break";
-		document.title = "Quick break";
-			pomodoroTime = 300;
+		currentStageEl.innerHTML = "Short break";
+		currentStage = "Short break";
+			pomodoroTime = SHORT_BREAK_DURATION;
 			onBreak = true;;
-			breakSound.play();
+			BREAK_SOUND.play();
 		}
 		else{
-		currentStageEl.innerHTML = "Pomodoro";
-		document.title = "Pomodoro";
-			pomodoroTime = 1500;
+		currentStageEl.innerHTML = "Study session";
+		currentStage = "Pomodoro";
+			pomodoroTime = STUDY_DURATION;
 			onBreak = false;
 			i++;
-			backToWorkSound.play();
+			BACK_TO_WORK_SOUND.play();
 		}
 	    }
 	let minutes = Math.floor(pomodoroTime/60);
@@ -144,8 +165,10 @@ function updateCountdown() {
 
 	seconds = seconds < 10 ? '0' + seconds : seconds;
 	minutes = minutes < 10 ? '0' + minutes : minutes;
+	let formatedTime = minutes + ':' + seconds
 
-	countDownEl.innerHTML = minutes + ':' + seconds;
+	document.title = formatedTime + " - " + currentStage;
+	countDownEl.innerHTML = formatedTime;
 	pomodoroTime--;
 }
 </script>
